@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunil Kumar Prajapati | Senior Cybersecurity Professional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─── */
+:root{
+  --bg:#050C1A;--s1:#0A1628;--s2:#0F1E38;--s3:#162444;
+  --cyan:#00D4FF;--cyan2:rgba(0,212,255,.12);--cyan3:rgba(0,212,255,.06);
+  --amber:#F59E0B;--green:#0FD9A0;--red:#FF4D6A;
+  --txt:#DCE8F2;--txt2:#8CA3BE;--txt3:#4A627A;
+  --border:rgba(0,212,255,.13);--border2:rgba(0,212,255,.07);
+  --mono:'JetBrains Mono',monospace;--sans:'Inter',sans-serif;
+  --r:4px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:15px}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.7;overflow-x:hidden}
+::selection{background:rgba(0,212,255,.25);color:#fff}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px}
+
+/* ─── CANVAS BG ─── */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.45}
+
+/* ─── NAV ─── */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:58px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;transition:all .35s;
+}
+#nav.solid{background:rgba(5,12,26,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-brand{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.12em;display:flex;align-items:center;gap:10px}
+.nav-brand::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.nav-links{display:flex;gap:28px}
+.nav-links a{font-family:var(--mono);font-size:11px;color:var(--txt3);text-decoration:none;letter-spacing:.08em;transition:color .2s;text-transform:uppercase}
+.nav-links a:hover{color:var(--cyan)}
+
+/* ─── SIDE DOTS ─── */
+#dotNav{position:fixed;right:24px;top:50%;transform:translateY(-50%);z-index:99;display:flex;flex-direction:column;gap:14px}
+.dot-item{position:relative;display:flex;align-items:center;gap:8px;justify-content:flex-end}
+.dot-item a{width:8px;height:8px;border-radius:50%;background:var(--txt3);border:1px solid transparent;transition:all .2s;display:block;flex-shrink:0}
+.dot-item.active a,.dot-item a:hover{background:var(--cyan);box-shadow:0 0 8px var(--cyan);transform:scale(1.3)}
+.dot-label{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.08em;opacity:0;transform:translateX(4px);transition:all .2s;white-space:nowrap;pointer-events:none}
+.dot-item:hover .dot-label{opacity:1;transform:translateX(0)}
+
+/* ─── HERO ─── */
+#hero{
+  min-height:100vh;display:grid;grid-template-columns:1fr 460px;
+  align-items:center;padding:90px 64px 48px;position:relative;z-index:1;gap:40px;
+}
+.hero-grid-overlay{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+.hero-glow{position:absolute;top:-10%;right:-5%;width:700px;height:700px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,212,255,.07) 0%,transparent 60%);pointer-events:none}
+.hero-left{position:relative;z-index:2}
+.hero-eyebrow{
+  font-family:var(--mono);font-size:11px;color:var(--cyan);letter-spacing:.2em;
+  text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;gap:12px;
+}
+.hero-eyebrow span{display:flex;align-items:center;gap:6px}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 2s infinite}
+.hero-name{
+  font-family:var(--mono);font-size:clamp(30px,4.2vw,54px);font-weight:700;
+  color:#fff;line-height:1.08;margin-bottom:6px;letter-spacing:-.01em;
+}
+.hero-name em{color:var(--cyan);font-style:normal}
+.hero-sub{font-family:var(--mono);font-size:clamp(12px,1.4vw,16px);color:var(--txt3);margin-bottom:30px;min-height:22px}
+.cursor{display:inline-block;width:2px;height:.9em;background:var(--cyan);vertical-align:middle;animation:blink 1s step-end infinite;margin-left:1px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-bio{
+  max-width:540px;color:rgba(220,232,242,.72);font-size:14px;line-height:1.9;
+  margin-bottom:36px;padding-left:18px;border-left:2px solid var(--cyan);
+}
+.hero-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:38px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;padding:5px 14px;
+  border:1px solid var(--border);border-radius:2px;color:var(--cyan);
+  background:var(--cyan2);letter-spacing:.06em;
+}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 24px;
+  background:var(--cyan);color:#050C1A;font-family:var(--mono);font-size:12px;
+  font-weight:700;letter-spacing:.08em;text-decoration:none;border-radius:var(--r);
+  transition:all .2s;
+}
+.btn-primary:hover{background:#00eeff;box-shadow:0 0 24px rgba(0,212,255,.4)}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 24px;
+  border:1px solid var(--border);color:var(--txt2);font-family:var(--mono);font-size:12px;
+  letter-spacing:.08em;text-decoration:none;border-radius:var(--r);transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan2)}
+
+/* ─── RADAR ─── */
+.hero-right{position:relative;z-index:2;display:flex;justify-content:center;align-items:center}
+.radar-wrap{position:relative;width:390px;height:390px}
+.radar-svg{width:100%;height:100%}
+.rsweep{transform-origin:50% 50%;animation:rsweep 3.2s linear infinite}
+@keyframes rsweep{to{transform:rotate(360deg)}}
+.blip{animation:blip-anim 2.4s ease-in-out infinite}
+.blip:nth-child(2){animation-delay:.8s}.blip:nth-child(3){animation-delay:1.6s}
+@keyframes blip-anim{0%,100%{opacity:0;r:3px}40%{opacity:1;r:6px}70%{opacity:.4;r:4px}}
+.radar-center-text{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;pointer-events:none;gap:4px;
+}
+.rct-num{font-family:var(--mono);font-size:40px;font-weight:700;color:var(--cyan);line-height:1}
+.rct-label{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:.14em;text-align:center}
+
+/* ─── STATS BAR ─── */
+#stats{
+  background:var(--s1);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:28px 64px;display:grid;grid-template-columns:repeat(4,1fr);
+  position:relative;z-index:1;
+}
+.stat-col{text-align:center;border-right:1px solid var(--border2);padding:0 16px}
+.stat-col:last-child{border-right:none}
+.stat-n{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--cyan);display:block;line-height:1}
+.stat-l{font-family:var(--mono);font-size:10px;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin-top:4px;display:block}
+
+/* ─── PAGE SECTIONS ─── */
+.pg-section{max-width:1200px;margin:0 auto;padding:96px 64px;position:relative;z-index:1}
+.pg-section--alt{background:var(--s1);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2)}
+.pg-section--alt .pg-section{background:none;border:none}
+
+.sec-eyebrow{font-family:var(--mono);font-size:10px;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.sec-eyebrow::before{content:'//';color:var(--txt3)}
+.sec-title{font-family:var(--mono);font-size:clamp(20px,2.8vw,30px);font-weight:700;color:#fff;margin-bottom:48px;line-height:1.2}
+.sec-title span{color:var(--cyan)}
+
+/* ─── ABOUT ─── */
+.about-grid{display:grid;grid-template-columns:3fr 2fr;gap:24px}
+.panel{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px 30px;position:relative;overflow:hidden;transition:border-color .3s,box-shadow .3s;
+}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.panel:hover{border-color:rgba(0,212,255,.3);box-shadow:0 0 32px rgba(0,212,255,.05)}
+.panel-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--cyan);text-transform:uppercase;margin-bottom:12px;opacity:.7}
+.panel p{color:rgba(220,232,242,.75);font-size:13.5px;line-height:1.85}
+.about-full{grid-column:1/-1}
+.tag-row{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}
+.tag-item{
+  font-family:var(--mono);font-size:10.5px;padding:4px 13px;
+  background:rgba(0,212,255,.07);border:1px solid rgba(0,212,255,.2);
+  border-radius:2px;color:rgba(0,212,255,.9);
+}
+.panel-list{list-style:none;margin-top:4px}
+.panel-list li{
+  font-size:13.5px;color:rgba(220,232,242,.75);padding:7px 0 7px 16px;
+  position:relative;border-bottom:1px solid var(--border2);line-height:1.65;
+}
+.panel-list li:last-child{border-bottom:none}
+.panel-list li::before{content:'▸';position:absolute;left:0;top:9px;color:var(--cyan);font-size:10px}
+
+/* ─── EXPERIENCE ─── */
+.timeline{position:relative}
+.timeline::before{
+  content:'';position:absolute;left:21px;top:24px;bottom:0;
+  width:1px;background:linear-gradient(to bottom,var(--cyan) 0%,transparent 100%);
+}
+.tl-item{display:grid;grid-template-columns:52px 1fr;gap:0 22px;margin-bottom:36px;position:relative}
+.tl-dot{
+  width:42px;height:42px;border-radius:50%;background:var(--s2);
+  border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;flex-shrink:0;
+  box-shadow:0 0 20px rgba(0,212,255,.2),inset 0 0 12px rgba(0,212,255,.05);
+}
+.tl-dot svg{width:17px;height:17px;stroke:var(--cyan);fill:none;stroke-width:2}
+.tl-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:22px 26px;position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;
+}
+.tl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent)}
+.tl-card:hover{border-color:rgba(0,212,255,.3);transform:translateX(5px)}
+.tl-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;margin-bottom:4px}
+.tl-role{font-family:var(--mono);font-size:14.5px;font-weight:700;color:#fff}
+.tl-period{
+  font-family:var(--mono);font-size:10.5px;color:var(--amber);
+  background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.22);
+  padding:3px 11px;border-radius:2px;white-space:nowrap;flex-shrink:0;
+}
+.tl-company{font-size:13px;color:var(--cyan);font-weight:600;margin-bottom:14px}
+.tl-bullets{list-style:none}
+.tl-bullets li{
+  font-size:13px;color:rgba(220,232,242,.72);
+  padding:5px 0 5px 16px;position:relative;line-height:1.72;
+  border-bottom:1px solid rgba(0,212,255,.04);
+}
+.tl-bullets li:last-child{border-bottom:none}
+.tl-bullets li::before{content:'▸';position:absolute;left:0;top:7px;color:var(--cyan);font-size:10px}
+.tl-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
+.tl-tag{
+  font-family:var(--mono);font-size:10px;padding:3px 10px;
+  background:rgba(15,217,160,.07);border:1px solid rgba(15,217,160,.18);
+  border-radius:2px;color:var(--green);letter-spacing:.04em;
+}
+
+/* ─── SKILLS ─── */
+.skills-layout{display:grid;grid-template-columns:1fr 380px;gap:48px;align-items:start}
+.skill-row{margin-bottom:14px}
+.skill-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.skill-name{font-family:var(--mono);font-size:12px;color:var(--txt)}
+.skill-pct{font-family:var(--mono);font-size:11px;color:var(--cyan)}
+.sbar-bg{height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:3px;width:0;transition:width 1.3s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--cyan),var(--green))}
+.sbar-fill.amber{background:linear-gradient(90deg,var(--amber),#ff7b35)}
+
+/* SPIDER CHART */
+.spider-wrap{position:relative}
+.spider-title{font-family:var(--mono);font-size:11px;color:var(--txt3);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-bottom:16px}
+.spider-svg{width:100%;overflow:visible}
+.spider-grid{stroke:rgba(0,212,255,.1);fill:none;stroke-width:1}
+.spider-axis{stroke:rgba(0,212,255,.08);stroke-width:1}
+.spider-poly{fill:rgba(0,212,255,.12);stroke:var(--cyan);stroke-width:2;transition:all .5s}
+.spider-poly-anim{animation:spider-grow .8s ease-out forwards}
+.spider-label{font-family:'JetBrains Mono',monospace;font-size:9.5px;fill:var(--txt3)}
+.spider-dot{fill:var(--cyan);r:4}
+
+/* ─── ARSENAL ─── */
+.arsenal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.ar-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px 22px;transition:border-color .3s,box-shadow .3s;
+}
+.ar-card:hover{border-color:rgba(0,212,255,.3);box-shadow:0 4px 28px rgba(0,212,255,.04)}
+.ar-cat{
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--amber);
+  text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.ar-tools{display:flex;flex-wrap:wrap;gap:7px}
+.tool-chip{
+  font-family:var(--mono);font-size:10.5px;padding:5px 11px;
+  background:var(--s3);border:1px solid var(--border2);border-radius:2px;color:var(--txt2);
+  transition:all .2s;cursor:default;
+}
+.tool-chip:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan2)}
+
+/* ─── FRAMEWORKS ─── */
+.fw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.fw-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px 22px;text-align:center;transition:all .3s;position:relative;overflow:hidden;
+}
+.fw-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:0;transition:opacity .3s}
+.fw-card:hover{border-color:rgba(0,212,255,.28)}.fw-card:hover::after{opacity:1}
+.fw-icon{
+  width:52px;height:52px;border-radius:50%;background:var(--cyan2);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 18px;
+}
+.fw-icon svg{width:22px;height:22px;stroke:var(--cyan);fill:none;stroke-width:2}
+.fw-name{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;margin-bottom:8px}
+.fw-desc{font-size:12px;color:var(--txt3);line-height:1.65}
+.fw-badge{
+  display:inline-block;margin-top:12px;font-family:var(--mono);font-size:9.5px;
+  padding:3px 10px;background:rgba(0,212,255,.07);border:1px solid var(--border);
+  border-radius:2px;color:var(--cyan);
+}
+
+/* ─── EDUCATION ─── */
+.edu-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:28px 32px;display:flex;align-items:flex-start;gap:22px;position:relative;overflow:hidden;
+}
+.edu-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--cyan),var(--green))}
+.edu-icon{
+  width:52px;height:52px;flex-shrink:0;background:var(--cyan2);
+  border:1px solid var(--border);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+}
+.edu-icon svg{width:24px;height:24px;stroke:var(--cyan);fill:none;stroke-width:2}
+.edu-degree{font-family:var(--mono);font-size:15px;font-weight:700;color:#fff;margin-bottom:4px}
+.edu-uni{font-size:13.5px;color:var(--cyan);margin-bottom:4px;font-weight:500}
+.edu-info{font-family:var(--mono);font-size:11px;color:var(--txt3)}
+
+/* ─── CERTIFICATIONS ─── */
+.cert-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.cert-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:24px 26px;display:flex;align-items:flex-start;gap:18px;
+  position:relative;overflow:hidden;transition:all .3s;
+}
+.cert-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--cyan)}
+.cert-card:hover{border-color:rgba(0,212,255,.3);box-shadow:0 4px 28px rgba(0,212,255,.06);transform:translateY(-2px)}
+.cert-ico{
+  width:48px;height:48px;flex-shrink:0;background:var(--cyan2);
+  border:1px solid var(--border);border-radius:var(--r);
+  display:flex;align-items:center;justify-content:center;
+}
+.cert-ico svg{width:22px;height:22px;stroke:var(--cyan);fill:none;stroke-width:2}
+.cert-name{font-family:var(--mono);font-size:13.5px;font-weight:700;color:#fff;margin-bottom:4px;line-height:1.3}
+.cert-issuer{font-size:12.5px;color:var(--cyan);margin-bottom:5px}
+.cert-id{font-family:var(--mono);font-size:10.5px;color:var(--txt3)}
+.credly-link{
+  display:inline-flex;align-items:center;gap:10px;margin-top:24px;
+  padding:13px 22px;background:var(--s2);border:1px solid var(--border);
+  border-radius:var(--r);text-decoration:none;color:var(--txt);
+  font-size:13.5px;font-weight:500;transition:all .2s;
+}
+.credly-link:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan2);transform:translateX(4px)}
+.credly-link svg{width:18px;height:18px;stroke:var(--cyan);fill:none;stroke-width:2;flex-shrink:0}
+.credly-sub{font-family:var(--mono);font-size:11px;color:var(--txt3);margin-top:2px}
+
+/* ─── CONTACT ─── */
+#contact{background:var(--s1);border-top:1px solid var(--border);position:relative;z-index:1}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.contact-intro p{color:rgba(220,232,242,.7);font-size:14px;line-height:1.85;margin-top:14px}
+.clink-list{display:flex;flex-direction:column;gap:12px}
+.clink{
+  display:flex;align-items:center;gap:16px;padding:15px 20px;
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  text-decoration:none;color:var(--txt);font-size:13.5px;transition:all .2s;
+}
+.clink:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan2);transform:translateX(5px)}
+.clink-icon{
+  width:38px;height:38px;flex-shrink:0;background:var(--cyan2);
+  border-radius:var(--r);display:flex;align-items:center;justify-content:center;
+}
+.clink-icon svg{width:16px;height:16px;stroke:var(--cyan);fill:none;stroke-width:2}
+.clink-sub{font-family:var(--mono);font-size:11px;color:var(--txt3);display:block;margin-top:2px}
+
+/* ─── FOOTER ─── */
+footer{
+  text-align:center;padding:26px;font-family:var(--mono);font-size:10.5px;
+  color:var(--txt3);border-top:1px solid var(--border);letter-spacing:.1em;
+  position:relative;z-index:1;
+}
+
+/* ─── FADE UP ANIMATION ─── */
+.fu{opacity:0;transform:translateY(22px);transition:opacity .65s ease,transform .65s ease}
+.fu.in{opacity:1;transform:translateY(0)}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:960px){
+  #hero{grid-template-columns:1fr;padding:100px 28px 44px}
+  .hero-right{display:none}
+  #stats{grid-template-columns:repeat(2,1fr);padding:20px 28px}
+  .pg-section{padding:64px 28px}
+  .about-grid,.skills-layout,.contact-grid{grid-template-columns:1fr}
+  .about-full{grid-column:1}
+  .arsenal-grid,.fw-grid,.cert-grid{grid-template-columns:1fr}
+  #dotNav{display:none}
+  #nav{padding:0 20px}
+  .nav-links{display:none}
+  .timeline::before{display:none}
+  .tl-item{grid-template-columns:1fr}
+  .tl-dot{display:none}
+  .stat-col{border-right:none;border-bottom:1px solid var(--border2);padding:14px 0}
+  .stat-col:last-child{border-bottom:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-brand">
+    <span></span> Global Cyber Defense Operations
+  </div>
+  <div class="nav-links">
+    <a href="#about">Profile</a>
+    <a href="#experience">Experience</a>
+    <a href="#skills">Skills</a>
+    <a href="#arsenal">Arsenal</a>
+    <a href="#certifications">Certs</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- SIDE DOT NAV -->
+<div id="dotNav">
+  <div class="dot-item active"><span class="dot-label">Hero</span><a href="#hero"></a></div>
+  <div class="dot-item"><span class="dot-label">Profile</span><a href="#about"></a></div>
+  <div class="dot-item"><span class="dot-label">Experience</span><a href="#experience"></a></div>
+  <div class="dot-item"><span class="dot-label">Skills</span><a href="#skills"></a></div>
+  <div class="dot-item"><span class="dot-label">Arsenal</span><a href="#arsenal"></a></div>
+  <div class="dot-item"><span class="dot-label">Frameworks</span><a href="#frameworks"></a></div>
+  <div class="dot-item"><span class="dot-label">Certs</span><a href="#certifications"></a></div>
+  <div class="dot-item"><span class="dot-label">Contact</span><a href="#contact"></a></div>
+</div>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-glow"></div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <span><span class="status-dot"></span> Available for Opportunities</span>
+      &nbsp;·&nbsp; Bengaluru, India
+    </div>
+    <h1 class="hero-name">Sunil Kumar<br><em>Prajapati</em></h1>
+    <div class="hero-sub"><span id="tw"></span><span class="cursor"></span></div>
+    <p class="hero-bio">
+      8.9+ years defending enterprise environments through proactive threat hunting,
+      advanced incident response, and full-cycle SIEM architecture. I build detection
+      that surfaces what others miss — and respond before damage spreads.
+    </p>
+    <div class="hero-chips">
+      <span class="chip">CEH v10 Certified</span>
+      <span class="chip">MITRE ATT&amp;CK</span>
+      <span class="chip">AI-Augmented SOC</span>
+      <span class="chip">UEBA Specialist</span>
+      <span class="chip">Open to Work</span>
+    </div>
+    <div class="hero-cta">
+      <a href="mailto:sunilkumar24293@gmail.com" class="btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Get in Touch
+      </a>
+      <a href="https://linkedin.com/in/sunil-kumar-prajapati-ceh-4b271b105" target="_blank" class="btn-outline">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+
+  <!-- RADAR -->
+  <div class="hero-right">
+    <div class="radar-wrap">
+      <svg class="radar-svg" viewBox="0 0 390 390" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="rGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00D4FF" stop-opacity=".06"/>
+            <stop offset="100%" stop-color="#050C1A" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="sweepG" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#00D4FF" stop-opacity=".55"/>
+            <stop offset="85%" stop-color="#00D4FF" stop-opacity=".08"/>
+            <stop offset="100%" stop-color="#00D4FF" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="195" cy="195" r="185" fill="url(#rGrad)"/>
+        <!-- grid rings -->
+        <circle cx="195" cy="195" r="45"  stroke="#00D4FF" stroke-opacity=".13" stroke-width="1" fill="none"/>
+        <circle cx="195" cy="195" r="90"  stroke="#00D4FF" stroke-opacity=".10" stroke-width="1" fill="none"/>
+        <circle cx="195" cy="195" r="135" stroke="#00D4FF" stroke-opacity=".08" stroke-width="1" fill="none"/>
+        <circle cx="195" cy="195" r="183" stroke="#00D4FF" stroke-opacity=".18" stroke-width="1.5" fill="none"/>
+        <!-- axes -->
+        <line x1="195" y1="12" x2="195" y2="378" stroke="#00D4FF" stroke-opacity=".07" stroke-width="1"/>
+        <line x1="12" y1="195" x2="378" y2="195" stroke="#00D4FF" stroke-opacity=".07" stroke-width="1"/>
+        <line x1="65" y1="65" x2="325" y2="325" stroke="#00D4FF" stroke-opacity=".05" stroke-width="1"/>
+        <line x1="325" y1="65" x2="65" y2="325" stroke="#00D4FF" stroke-opacity=".05" stroke-width="1"/>
+        <!-- sweep -->
+        <g class="rsweep">
+          <path d="M195 195 L195 12 A183 183 0 0 1 353 278 Z" fill="url(#sweepG)" opacity=".4"/>
+          <line x1="195" y1="195" x2="195" y2="12" stroke="#00D4FF" stroke-width="1.5" stroke-opacity=".7"/>
+        </g>
+        <!-- blips -->
+        <circle class="blip" cx="258" cy="132" r="4" fill="#F59E0B"/>
+        <circle class="blip" cx="142" cy="240" r="4" fill="#00D4FF"/>
+        <circle class="blip" cx="300" cy="245" r="4" fill="#0FD9A0"/>
+        <!-- center -->
+        <circle cx="195" cy="195" r="5" fill="#00D4FF" opacity=".9"/>
+        <circle cx="195" cy="195" r="12" stroke="#00D4FF" stroke-opacity=".2" stroke-width="1" fill="none"/>
+        <!-- compass labels -->
+        <text x="191" y="20" font-family="JetBrains Mono" font-size="9" fill="#00D4FF" fill-opacity=".4">N</text>
+        <text x="371" y="199" font-family="JetBrains Mono" font-size="9" fill="#00D4FF" fill-opacity=".4">E</text>
+        <text x="191" y="383" font-family="JetBrains Mono" font-size="9" fill="#00D4FF" fill-opacity=".4">S</text>
+        <text x="10" y="199" font-family="JetBrains Mono" font-size="9" fill="#00D4FF" fill-opacity=".4">W</text>
+      </svg>
+      <div class="radar-center-text">
+        <div class="rct-num">8.9<span style="font-size:22px;color:var(--txt3)">+</span></div>
+        <div class="rct-label">YEARS IN<br>THREAT OPS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stat-col"><span class="stat-n" data-c="8" data-s=".9+">0</span><span class="stat-l">Years Experience</span></div>
+  <div class="stat-col"><span class="stat-n" data-c="3" data-s="+">0</span><span class="stat-l">Enterprise Employers</span></div>
+  <div class="stat-col"><span class="stat-n" data-c="5" data-s="+">0</span><span class="stat-l">SIEM Platforms</span></div>
+  <div class="stat-col"><span class="stat-n" data-c="2" data-s=" Certs">0</span><span class="stat-l">Certifications</span></div>
+</div>
+
+<!-- ─── ABOUT ─── -->
+<div id="about">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Profile</div>
+  <h2 class="sec-title fu">Professional <span>Overview</span></h2>
+  <div class="about-grid">
+    <div class="panel about-full fu">
+      <div class="panel-tag">// EXECUTIVE SUMMARY</div>
+      <p>Results-driven cybersecurity professional with 8.9+ years of hands-on experience in threat hunting, incident response, SIEM engineering, and security content development. Track record across three enterprise environments — Securonix, Sacumen, and LTIMindtree — delivering end-to-end SIEM implementations, designing MITRE ATT&CK-mapped detection use cases, and running proactive hunting campaigns that surface adversary activity before damage occurs. Early adopter of AI-augmented SecOps workflows (Copilot, ChatGPT) to accelerate analysis and detection. Skilled in stakeholder management, client-facing engagements, and mentoring SOC teams.</p>
+      <div class="tag-row">
+        <span class="tag-item">Hypothesis-Driven Hunting</span>
+        <span class="tag-item">End-to-End IR</span>
+        <span class="tag-item">SIEM Architecture</span>
+        <span class="tag-item">AI-Augmented SecOps</span>
+        <span class="tag-item">Detection Engineering</span>
+        <span class="tag-item">Client Stakeholder Mgmt</span>
+        <span class="tag-item">UEBA Analytics</span>
+        <span class="tag-item">Parser Development</span>
+      </div>
+    </div>
+    <div class="panel fu">
+      <div class="panel-tag">// HUNTING APPROACH</div>
+      <p>Operates at the intersection of structured frameworks and adversary intuition — applying Pyramid of Pain prioritisation, Cyber Kill Chain staging, and MITRE ATT&CK TTP mapping to every hunt. Uses KQL, Python, and SOAR to scale human analysis at high log volumes.</p>
+    </div>
+    <div class="panel fu">
+      <div class="panel-tag">// SEEKING ROLES IN</div>
+      <ul class="panel-list">
+        <li>Senior Threat Hunter / Hunt Team Lead</li>
+        <li>Incident Response Specialist / IR Lead</li>
+        <li>Detection Engineer / SIEM Architect</li>
+        <li>SOC Manager / Security Engineering Lead</li>
+        <li>Security Consultant (MSSP / Enterprise)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ─── EXPERIENCE ─── -->
+<div class="pg-section--alt" id="experience">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Career History</div>
+  <h2 class="sec-title fu">Professional <span>Experience</span></h2>
+  <div class="timeline">
+
+    <!-- LTIMindtree -->
+    <div class="tl-item fu">
+      <div class="tl-dot">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <div class="tl-role">Specialist – Information Security</div>
+          <div class="tl-period">Dec 2022 – Present</div>
+        </div>
+        <div class="tl-company">LTIMindtree &nbsp;·&nbsp; Bengaluru, India &nbsp;·&nbsp; <em style="color:var(--green);font-style:normal">Current Role</em></div>
+        <ul class="tl-bullets">
+          <li>Led proactive, hypothesis-driven threat hunting campaigns using AI tools (Microsoft Copilot, ChatGPT) to uncover stealthy attacker behaviour across enterprise environments.</li>
+          <li>Developed and deployed MITRE ATT&CK-mapped detection use cases and correlation rules — improving adversary TTP coverage and reducing mean dwell time.</li>
+          <li>Authored Python scripts to automate phishing email triage — covering header parsing, URL extraction, and attachment hash analysis — drastically cutting manual effort.</li>
+          <li>Engineered KQL-based hunting queries against Microsoft Defender and Sentinel log sources to detect lateral movement, privilege escalation, and persistence TTPs.</li>
+          <li>Performed end-to-end SIEM log source onboarding including log architecture design, parser development, and event flow validation across Windows, Proxy, Network, DB, and App log types.</li>
+          <li>Executed malware and sandbox analysis as part of active hunting engagements to identify zero-day behaviours and attacker tooling gaps.</li>
+          <li>Coordinated with L2 analysts and SOC monitoring teams; escalated confirmed incidents with full investigative context and recommended remediation steps.</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">Threat Hunting</span><span class="tl-tag">Microsoft Sentinel</span><span class="tl-tag">Defender EDR</span>
+          <span class="tl-tag">KQL</span><span class="tl-tag">Python</span><span class="tl-tag">MITRE ATT&CK</span><span class="tl-tag">AI-SecOps</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sacumen -->
+    <div class="tl-item fu">
+      <div class="tl-dot">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      </div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <div class="tl-role">Senior Analyst – Security Engineering</div>
+          <div class="tl-period">Sep 2022 – Dec 2022</div>
+        </div>
+        <div class="tl-company">Sacumen &nbsp;·&nbsp; Bengaluru, India</div>
+        <ul class="tl-bullets">
+          <li>Deployed and integrated ArcSight Smart Connectors for multi-source log ingestion; configured ArcSight ESM from the ground up.</li>
+          <li>Developed new log parsers and updated legacy parsers to normalise event data from Windows Server 2019, SQL Server, and custom application sources.</li>
+          <li>Configured Windows Server 2019 environments; generated and analysed SQL Management Studio 2019 audit logs to support detection engineering requirements.</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">ArcSight ESM</span><span class="tl-tag">Smart Connectors</span><span class="tl-tag">Parser Dev</span><span class="tl-tag">Windows Server 2019</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Securonix – Analyst -->
+    <div class="tl-item fu">
+      <div class="tl-dot">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="tl-card">
+        <div class="tl-head">
+          <div class="tl-role">Cyber Threat &amp; Content Analyst → Cloud Security Engineer</div>
+          <div class="tl-period">Sep 2017 – Aug 2022</div>
+        </div>
+        <div class="tl-company">Securonix Pvt Ltd &nbsp;·&nbsp; Bengaluru, India &nbsp;·&nbsp; <em style="color:var(--amber);font-style:normal">5 Years</em></div>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--cyan);margin:0 0 8px;font-style:italic">Cyber Threat &amp; Content Analyst (2019–2022)</p>
+        <ul class="tl-bullets">
+          <li>Designed and implemented end-to-end detection use cases on Securonix Snypr — threat models, correlation rules, UEBA policies, and risk-scored dashboards.</li>
+          <li>Built CRP and CFP parser components to ingest and normalise raw logs from Palo Alto, Bluecoat Proxy, Symantec, and 10+ custom data sources.</li>
+          <li>Created entity-centric hunting rules leveraging UEBA attribute mapping to detect insider threats, privilege abuse, and anomalous user behaviour.</li>
+          <li>Analysed Hadoop distributed log stores and Solr indices for large-scale threat correlation; mapped detection to MITRE ATT&CK and Pyramid of Pain.</li>
+        </ul>
+        <p style="font-family:var(--mono);font-size:11px;color:var(--cyan);margin:14px 0 8px;font-style:italic">Cloud Security Engineer – Operations (2017–2019)</p>
+        <ul class="tl-bullets">
+          <li>Installed, configured, and upgraded Securonix SIEM environments; managed patch deployment with assessed business impact.</li>
+          <li>Created security rules, threat models, and dashboards; reported violations through client-facing threat and violations dashboards.</li>
+          <li>Conducted threat hunting and false-positive reduction exercises to continuously tune detection fidelity across live client environments.</li>
+        </ul>
+        <div class="tl-tags">
+          <span class="tl-tag">Securonix Snypr</span><span class="tl-tag">UEBA</span><span class="tl-tag">Use Case Design</span>
+          <span class="tl-tag">Hadoop / Solr</span><span class="tl-tag">SIEM Implementation</span><span class="tl-tag">Insider Threat</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ─── SKILLS ─── -->
+<div id="skills">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Proficiency</div>
+  <h2 class="sec-title fu">Core <span>Skills</span></h2>
+  <div class="skills-layout">
+
+    <!-- Bars -->
+    <div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Threat Hunting (Hypothesis-Driven)</span><span class="skill-pct">95%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="95"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Incident Response &amp; Triage</span><span class="skill-pct">92%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="92"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">SIEM Architecture &amp; Implementation</span><span class="skill-pct">95%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="95"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">MITRE ATT&amp;CK Framework</span><span class="skill-pct">90%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="90"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Parser / Detection Rule Development</span><span class="skill-pct">93%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="93"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">UEBA / Behaviour Analytics</span><span class="skill-pct">88%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="88"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">KQL (Kusto Query Language)</span><span class="skill-pct">85%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="85"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Python (Security Automation)</span><span class="skill-pct">82%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="82"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Malware &amp; Phishing Analysis</span><span class="skill-pct">88%</span></div><div class="sbar-bg"><div class="sbar-fill" data-w="88"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Cloud Security (Azure / Entra ID)</span><span class="skill-pct">80%</span></div><div class="sbar-bg"><div class="sbar-fill amber" data-w="80"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">PowerShell</span><span class="skill-pct">78%</span></div><div class="sbar-bg"><div class="sbar-fill amber" data-w="78"></div></div></div>
+      <div class="skill-row fu"><div class="skill-meta"><span class="skill-name">Big Data (Hadoop / Solr)</span><span class="skill-pct">80%</span></div><div class="sbar-bg"><div class="sbar-fill amber" data-w="80"></div></div></div>
+    </div>
+
+    <!-- Spider Chart -->
+    <div class="spider-wrap fu">
+      <div class="spider-title">COMPETENCY RADAR</div>
+      <svg class="spider-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <!-- grid polygons 25/50/75/100 -->
+        <polygon class="spider-grid" points="200,160 228,172 240,200 228,228 200,240 172,228 160,200 172,172"/>
+        <polygon class="spider-grid" points="200,120 257,143 280,200 257,257 200,280 143,257 120,200 143,143"/>
+        <polygon class="spider-grid" points="200,80 285,115 320,200 285,285 200,320 115,285 80,200 115,115"/>
+        <polygon class="spider-grid" points="200,40 313,87 360,200 313,313 200,360 87,313 40,200 87,87"/>
+        <!-- axes -->
+        <line class="spider-axis" x1="200" y1="200" x2="200" y2="40"/>
+        <line class="spider-axis" x1="200" y1="200" x2="313" y2="87"/>
+        <line class="spider-axis" x1="200" y1="200" x2="360" y2="200"/>
+        <line class="spider-axis" x1="200" y1="200" x2="313" y2="313"/>
+        <line class="spider-axis" x1="200" y1="200" x2="200" y2="360"/>
+        <line class="spider-axis" x1="200" y1="200" x2="87" y2="313"/>
+        <line class="spider-axis" x1="200" y1="200" x2="40" y2="200"/>
+        <line class="spider-axis" x1="200" y1="200" x2="87" y2="87"/>
+        <!-- data polygon: Hunting 95, IR 92, SIEM 95, Detection 93, UEBA 88, Python 82, Cloud 80, Malware 88 -->
+        <polygon id="spiderPoly" class="spider-poly" points="200,200 200,200 200,200 200,200 200,200 200,200 200,200 200,200"/>
+        <!-- axis labels -->
+        <text class="spider-label" x="194" y="30" text-anchor="middle">Threat Hunting</text>
+        <text class="spider-label" x="326" y="82" text-anchor="start">Incident Response</text>
+        <text class="spider-label" x="368" y="204" text-anchor="start">SIEM</text>
+        <text class="spider-label" x="326" y="326" text-anchor="start">Detection Eng</text>
+        <text class="spider-label" x="194" y="378" text-anchor="middle">UEBA</text>
+        <text class="spider-label" x="74" y="326" text-anchor="end">Python</text>
+        <text class="spider-label" x="30" y="204" text-anchor="end">Cloud Sec</text>
+        <text class="spider-label" x="74" y="82" text-anchor="end">Malware Anal</text>
+        <!-- pct labels on grid -->
+        <text font-family="JetBrains Mono" font-size="8.5" fill="rgba(0,212,255,.35)" x="202" y="158">25</text>
+        <text font-family="JetBrains Mono" font-size="8.5" fill="rgba(0,212,255,.35)" x="202" y="118">50</text>
+        <text font-family="JetBrains Mono" font-size="8.5" fill="rgba(0,212,255,.35)" x="202" y="78">75</text>
+        <text font-family="JetBrains Mono" font-size="8.5" fill="rgba(0,212,255,.35)" x="202" y="38">100</text>
+      </svg>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ─── ARSENAL ─── -->
+<div class="pg-section--alt" id="arsenal">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Technical Depth</div>
+  <h2 class="sec-title fu">Technical <span>Arsenal</span></h2>
+  <div class="arsenal-grid">
+    <div class="ar-card fu"><div class="ar-cat">SIEM Platforms</div><div class="ar-tools"><span class="tool-chip">Securonix Snypr</span><span class="tool-chip">IBM QRadar</span><span class="tool-chip">Splunk</span><span class="tool-chip">ArcSight ESM</span><span class="tool-chip">Microsoft Sentinel</span></div></div>
+    <div class="ar-card fu"><div class="ar-cat">EDR &amp; Endpoint</div><div class="ar-tools"><span class="tool-chip">Microsoft Defender</span><span class="tool-chip">Symantec EDR</span><span class="tool-chip">Cofense</span><span class="tool-chip">Sandbox Analysis</span></div></div>
+    <div class="ar-card fu"><div class="ar-cat">Cloud &amp; Identity</div><div class="ar-tools"><span class="tool-chip">Azure AD / Entra ID</span><span class="tool-chip">Azure Portal</span><span class="tool-chip">IDAM</span><span class="tool-chip">Copilot for Security</span></div></div>
+    <div class="ar-card fu"><div class="ar-cat">Languages &amp; Scripting</div><div class="ar-tools"><span class="tool-chip">Python</span><span class="tool-chip">KQL</span><span class="tool-chip">PowerShell</span><span class="tool-chip">Linux / Bash</span><span class="tool-chip">Regex</span></div></div>
+    <div class="ar-card fu"><div class="ar-cat">Data &amp; Analytics</div><div class="ar-tools"><span class="tool-chip">Hadoop</span><span class="tool-chip">Apache Solr</span><span class="tool-chip">UEBA</span><span class="tool-chip">Log Correlation</span><span class="tool-chip">Big Data</span></div></div>
+    <div class="ar-card fu"><div class="ar-cat">ITSM &amp; Automation</div><div class="ar-tools"><span class="tool-chip">JIRA</span><span class="tool-chip">ServiceNow</span><span class="tool-chip">SOAR</span><span class="tool-chip">SOC Playbooks</span><span class="tool-chip">Incident Mgmt</span></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ─── FRAMEWORKS ─── -->
+<div id="frameworks">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Methodology</div>
+  <h2 class="sec-title fu">Security <span>Frameworks</span></h2>
+  <div class="fw-grid">
+    <div class="fw-card fu">
+      <div class="fw-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="fw-name">MITRE ATT&amp;CK</div>
+      <div class="fw-desc">Maps every detection use case and hunting hypothesis to adversary tactics and techniques across all campaign stages — from initial access to exfiltration.</div>
+      <div class="fw-badge">Primary Hunt Framework</div>
+    </div>
+    <div class="fw-card fu">
+      <div class="fw-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+      <div class="fw-name">Cyber Kill Chain</div>
+      <div class="fw-desc">Structures threat hunting and incident response strategy across recon, weaponisation, delivery, exploitation, C2, and exfiltration phases.</div>
+      <div class="fw-badge">IR Structuring</div>
+    </div>
+    <div class="fw-card fu">
+      <div class="fw-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      <div class="fw-name">Pyramid of Pain</div>
+      <div class="fw-desc">Guides indicator prioritisation — targeting TTPs and tools over transient IOCs to maximise disruption to attacker operations and increase their cost.</div>
+      <div class="fw-badge">Detection Prioritisation</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ─── EDUCATION ─── -->
+<div class="pg-section--alt">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Academic Background</div>
+  <h2 class="sec-title fu">Education</h2>
+  <div class="edu-card fu">
+    <div class="edu-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+    <div>
+      <div class="edu-degree">Bachelor of Engineering (B.E.) – Electronics &amp; Communication</div>
+      <div class="edu-uni">Visvesvaraya Technological University (VTU), Karnataka, India</div>
+      <div class="edu-info">Government-recognised engineering university · Karnataka State</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ─── CERTIFICATIONS ─── -->
+<div id="certifications">
+<div class="pg-section">
+  <div class="sec-eyebrow fu">Credentials</div>
+  <h2 class="sec-title fu">Certifications &amp; <span>Credentials</span></h2>
+  <div class="cert-grid">
+    <div class="cert-card fu">
+      <div class="cert-ico"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div>
+        <div class="cert-name">Certified Ethical Hacker (CEH v10)</div>
+        <div class="cert-issuer">EC-Council</div>
+        <div class="cert-id">ID: ECC4328910576</div>
+      </div>
+    </div>
+    <div class="cert-card fu">
+      <div class="cert-ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <div>
+        <div class="cert-name">CDAC Certified – IT Infrastructure &amp; Security Systems</div>
+        <div class="cert-issuer">Centre for Development of Advanced Computing (CDAC)</div>
+        <div class="cert-id">Government of India Accredited</div>
+      </div>
+    </div>
+  </div>
+  <a href="https://www.credly.com/users/sunil-prajapati.b90846fb" target="_blank" class="credly-link fu">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+    <div>
+      <div>View Digital Badge Portfolio on Credly</div>
+      <div class="credly-sub">credly.com/users/sunil-prajapati.b90846fb</div>
+    </div>
+  </a>
+</div>
+</div>
+
+<!-- ─── CONTACT ─── -->
+<div id="contact">
+<div class="pg-section">
+  <div class="contact-grid">
+    <div class="contact-intro fu">
+      <div class="sec-eyebrow" style="margin-bottom:8px">Get in Touch</div>
+      <h2 class="sec-title" style="margin-bottom:0">Open to <span>Opportunities</span></h2>
+      <p>Actively exploring senior roles in Threat Hunting, Incident Response, Detection Engineering, SIEM Architecture, and SOC Leadership. If your organisation needs someone who builds detection that finds what others miss — let's connect.</p>
+    </div>
+    <div class="clink-list fu">
+      <a href="mailto:sunilkumar24293@gmail.com" class="clink">
+        <div class="clink-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg></div>
+        <div><strong>Email</strong><span class="clink-sub">sunilkumar24293@gmail.com</span></div>
+      </a>
+      <a href="tel:+916363396742" class="clink">
+        <div class="clink-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.12 2.18 2 2 0 012.11 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/></svg></div>
+        <div><strong>Phone</strong><span class="clink-sub">+91-63XXXXXX42</span></div>
+      </a>
+      <a href="https://www.linkedin.com/in/sunil-kumar-prajapati-ceh-4b271b105" target="_blank" class="clink">
+        <div class="clink-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></div>
+        <div><strong>LinkedIn</strong><span class="clink-sub">sunil-kumar-prajapati-ceh-4b271b105</span></div>
+      </a>
+      <a href="https://www.credly.com/users/sunil-prajapati.b90846fb" target="_blank" class="clink">
+        <div class="clink-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></div>
+        <div><strong>Credly Profile</strong><span class="clink-sub">credly.com/users/sunil-prajapati</span></div>
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+
+<footer>SUNIL KUMAR PRAJAPATI &nbsp;·&nbsp; CYBERSECURITY PROFESSIONAL &nbsp;·&nbsp; BENGALURU, INDIA</footer>
+
+<script>
+/* ─── BG CANVAS PARTICLES ─── */
+(function(){
+  const cv=document.getElementById('bgCanvas');
+  const ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;init()}
+  function init(){
+    pts=[];
+    const n=Math.floor((W*H)/22000);
+    for(let i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,r:Math.random()*1.5+.5});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(0,212,255,.35)';ctx.fill();
+    });
+    for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<130){
+        ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+        ctx.strokeStyle=`rgba(0,212,255,${.12*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+/* ─── TYPEWRITER ─── */
+(function(){
+  const titles=["Senior Threat Hunter","Incident Response Specialist","SIEM Architect","Detection Engineer","AI-Augmented SOC Lead"];
+  let ti=0,ci=0,del=false;
+  const el=document.getElementById('tw');
+  function go(){
+    const cur=titles[ti];
+    if(!del){el.textContent=cur.slice(0,++ci);if(ci===cur.length){del=true;setTimeout(go,2100);return}}
+    else{el.textContent=cur.slice(0,--ci);if(ci===0){del=false;ti=(ti+1)%titles.length}}
+    setTimeout(go,del?38:78);
+  }
+  go();
+})();
+
+/* ─── NAV SCROLL ─── */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>nav.classList.toggle('solid',scrollY>40));
+
+/* ─── COUNTER ANIMATION ─── */
+function animCounters(){
+  document.querySelectorAll('[data-c]').forEach(el=>{
+    const t=parseInt(el.getAttribute('data-c')), s=el.getAttribute('data-s')||'';
+    let c=0; const step=Math.max(1,Math.ceil(t/30));
+    const tmr=setInterval(()=>{c=Math.min(c+step,t);el.textContent=c+s;if(c>=t)clearInterval(tmr)},48);
+  });
+}
+let cRan=false;
+new IntersectionObserver(e=>{if(e[0].isIntersecting&&!cRan){cRan=true;animCounters()}},{threshold:.3}).observe(document.getElementById('stats'));
+
+/* ─── SKILL BARS ─── */
+let bRan=false;
+function animBars(){document.querySelectorAll('.sbar-fill').forEach(b=>{b.style.width=b.getAttribute('data-w')+'%'})}
+new IntersectionObserver(e=>{if(e[0].isIntersecting&&!bRan){bRan=true;setTimeout(animBars,200)}},{threshold:.2}).observe(document.getElementById('skills'));
+
+/* ─── SPIDER CHART ─── */
+(function(){
+  const skills=[.95,.92,.95,.93,.88,.82,.80,.88];
+  const C=200,R=160;
+  const angles=skills.map((_,i)=>i*(Math.PI*2/8)-Math.PI/2);
+  let sRan=false;
+  function animSpider(){
+    const poly=document.getElementById('spiderPoly');
+    if(!poly)return;
+    const pts=skills.map((s,i)=>{
+      const a=angles[i];
+      return `${C+R*s*Math.cos(a)},${C+R*s*Math.sin(a)}`;
+    }).join(' ');
+    // animate from center
+    let t=0;
+    const step=()=>{
+      t=Math.min(t+.04,1);
+      const curPts=skills.map((s,i)=>{
+        const a=angles[i], r=R*s*t;
+        return `${C+r*Math.cos(a)},${C+r*Math.sin(a)}`;
+      }).join(' ');
+      poly.setAttribute('points',curPts);
+      if(t<1)requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  new IntersectionObserver(e=>{if(e[0].isIntersecting&&!sRan){sRan=true;setTimeout(animSpider,300)}},{threshold:.2}).observe(document.getElementById('skills'));
+})();
+
+/* ─── FADE UP OBSERVER ─── */
+const fuObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')})},{threshold:.08});
+document.querySelectorAll('.fu').forEach(el=>fuObs.observe(el));
+
+/* ─── DOT NAV ─── */
+(function(){
+  const sections=['hero','about','experience','skills','arsenal','frameworks','certifications','contact'];
+  const dots=document.querySelectorAll('#dotNav .dot-item');
+  function update(){
+    const mid=scrollY+innerHeight/2;
+    sections.forEach((id,i)=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      const{top,bottom}=el.getBoundingClientRect();
+      const abs=top+scrollY;
+      if(mid>=abs&&mid<abs+el.offsetHeight){
+        dots.forEach(d=>d.classList.remove('active'));
+        if(dots[i])dots[i].classList.add('active');
+      }
+    });
+  }
+  window.addEventListener('scroll',update,{passive:true});update();
+})();
+</script>
+</body>
+</html>
